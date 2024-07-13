@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LanguageExt.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contoso.Core\Contoso.Core.csproj" />
+    <ProjectReference Include="..\Contoso.Repository.Models\Contoso.Repository.Models.csproj" />
+    <ProjectReference Include="..\Contoso.Repository\Contoso.Repository.csproj" />
+    <ProjectReference Include="..\Contoso.Validators\Contoso.Validators.csproj" />
+  </ItemGroup>
+
+</Project>

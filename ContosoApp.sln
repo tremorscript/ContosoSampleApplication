@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CC929E6A-4F70-42F1-A78E-C3A425157403}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		..\..\.gitattributes = ..\..\.gitattributes
+		..\..\.gitconfig = ..\..\.gitconfig
+		..\..\.gitignore = ..\..\.gitignore
+		..\..\Directory.Build.props = ..\..\Directory.Build.props
+		..\..\Directory.Packages.props = ..\..\Directory.Packages.props
+		..\..\LICENSE = ..\..\LICENSE
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Validators", "Contoso.Validators\Contoso.Validators.csproj", "{5FE145D6-953A-4DE6-B041-A229FE369BA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Repository.Models", "Contoso.Repository.Models\Contoso.Repository.Models.csproj", "{B2AD7781-080D-498D-BE43-5CFEC26FA458}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Core", "Contoso.Core\Contoso.Core.csproj", "{4FE2CCD9-5EA2-4A95-B914-C60FA5FD7289}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contoso.Manager", "Contoso.Manager\Contoso.Manager.csproj", "{E9536F4D-AF38-4075-A8F5-F040F5910252}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contoso.Web.Extensions", "Contoso.Web.Extensions\Contoso.Web.Extensions.csproj", "{4E117644-CD83-4753-985F-1E14C2346264}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contoso.Repository", "Contoso.Repository\Contoso.Repository.csproj", "{4C530437-4585-467F-AE6E-2E748D864DAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contoso.DbContext", "Contoso.DbContext\Contoso.DbContext.csproj", "{325D2D77-55A3-4A23-A58B-D3C20E3BA558}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contoso.DbContext.Configuration", "Contoso.DbContext.Configuration\Contoso.DbContext.Configuration.csproj", "{A12E81EE-189C-4635-9B09-B56ADE436BE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FE145D6-953A-4DE6-B041-A229FE369BA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FE145D6-953A-4DE6-B041-A229FE369BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FE145D6-953A-4DE6-B041-A229FE369BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FE145D6-953A-4DE6-B041-A229FE369BA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D23E29A9-7F40-4DB4-B597-BF7F027F8F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D23E29A9-7F40-4DB4-B597-BF7F027F8F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D23E29A9-7F40-4DB4-B597-BF7F027F8F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D23E29A9-7F40-4DB4-B597-BF7F027F8F91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2AD7781-080D-498D-BE43-5CFEC26FA458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2AD7781-080D-498D-BE43-5CFEC26FA458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2AD7781-080D-498D-BE43-5CFEC26FA458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2AD7781-080D-498D-BE43-5CFEC26FA458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FE2CCD9-5EA2-4A95-B914-C60FA5FD7289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FE2CCD9-5EA2-4A95-B914-C60FA5FD7289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FE2CCD9-5EA2-4A95-B914-C60FA5FD7289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FE2CCD9-5EA2-4A95-B914-C60FA5FD7289}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9536F4D-AF38-4075-A8F5-F040F5910252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9536F4D-AF38-4075-A8F5-F040F5910252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9536F4D-AF38-4075-A8F5-F040F5910252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9536F4D-AF38-4075-A8F5-F040F5910252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67BA8069-CA5C-41CD-804C-A14938B36B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67BA8069-CA5C-41CD-804C-A14938B36B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67BA8069-CA5C-41CD-804C-A14938B36B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67BA8069-CA5C-41CD-804C-A14938B36B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E117644-CD83-4753-985F-1E14C2346264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E117644-CD83-4753-985F-1E14C2346264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E117644-CD83-4753-985F-1E14C2346264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E117644-CD83-4753-985F-1E14C2346264}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C530437-4585-467F-AE6E-2E748D864DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C530437-4585-467F-AE6E-2E748D864DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C530437-4585-467F-AE6E-2E748D864DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C530437-4585-467F-AE6E-2E748D864DAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{325D2D77-55A3-4A23-A58B-D3C20E3BA558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{325D2D77-55A3-4A23-A58B-D3C20E3BA558}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{325D2D77-55A3-4A23-A58B-D3C20E3BA558}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{325D2D77-55A3-4A23-A58B-D3C20E3BA558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A12E81EE-189C-4635-9B09-B56ADE436BE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A12E81EE-189C-4635-9B09-B56ADE436BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A12E81EE-189C-4635-9B09-B56ADE436BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A12E81EE-189C-4635-9B09-B56ADE436BE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D839007-BD31-4F04-BD81-84569EE75127}
+	EndGlobalSection
+EndGlobal
