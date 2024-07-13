@@ -10,13 +10,10 @@ namespace Contoso.Repository;
 
 public static class CourseAssignmentRepository
 {
-    public static async Task<int> AddAsync(
-        CourseAssignment courseAssignment,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<int> AddAsync(CourseAssignment courseAssignment) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 await contosoDbContext
                     .CourseAssignments.AddAsync(courseAssignment)
                     .ConfigureAwait(false);
@@ -31,7 +28,7 @@ public static class CourseAssignmentRepository
     ) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 return await contosoDbContext
                     .CourseAssignments.Where(c => c.CourseID == courseId)
                     .Include(c => c.Course)

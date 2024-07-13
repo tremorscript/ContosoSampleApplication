@@ -11,13 +11,10 @@ namespace Contoso.Repository;
 
 public static class DepartmentRepository
 {
-    public static async Task<int> AddAsync(
-        Department department,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<int> AddAsync(Department department) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
 
                 await contosoDbContext.Departments.AddAsync(department).ConfigureAwait(false);
                 await contosoDbContext.SaveChangesAsync().ConfigureAwait(false);
@@ -25,13 +22,10 @@ public static class DepartmentRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Unit> DeleteAsync(
-        int departmentId,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Unit> DeleteAsync(int departmentId) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 var department =
                     await contosoDbContext.Departments.FindAsync(departmentId).ConfigureAwait(false)
                     ?? throw new Exception($"{departmentId} not found");
@@ -43,13 +37,10 @@ public static class DepartmentRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Option<Department>> GetAsync(
-        int id,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Option<Department>> GetAsync(int id) =>
         await ExecuteQuery<Option<Department>>(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 return await contosoDbContext
                     .Departments.SingleOrDefaultAsync(d => d.DepartmentId == id)
                     .Map(Optional)
@@ -57,13 +48,10 @@ public static class DepartmentRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Unit> UpdateAsync(
-        Department department,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Unit> UpdateAsync(Department department) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
 
                 contosoDbContext.Departments.Update(department);
                 return await contosoDbContext

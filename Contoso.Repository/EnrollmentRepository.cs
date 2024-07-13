@@ -11,23 +11,20 @@ namespace Contoso.Repository;
 
 public static class EnrollmentRepository
 {
-    public static async Task<int> AddAsync(
-        Enrollment enrollment,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<int> AddAsync(Enrollment enrollment) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 contosoDbContext.Enrollments.Add(enrollment);
                 await contosoDbContext.SaveChangesAsync().ConfigureAwait(false);
                 return enrollment.EnrollmentId;
             })
             .ConfigureAwait(false);
 
-    public static async Task<Unit> DeleteAsync(int id, ContosoDbContext? contosoDbContext = null) =>
+    public static async Task<Unit> DeleteAsync(int id) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 var enrollment =
                     await contosoDbContext.Enrollments.FindAsync(id).ConfigureAwait(false)
                     ?? throw new Exception($"{id} not found");
@@ -39,13 +36,10 @@ public static class EnrollmentRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Option<Enrollment>> GetAsync(
-        int id,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Option<Enrollment>> GetAsync(int id) =>
         await ExecuteQuery<Option<Enrollment>>(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 return await contosoDbContext
                     .Enrollments.Include(e => e.Student)
                     .Include(e => e.Course)
@@ -55,13 +49,10 @@ public static class EnrollmentRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Unit> UpdateAsync(
-        Enrollment enrollment,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Unit> UpdateAsync(Enrollment enrollment) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 contosoDbContext.Enrollments.Update(enrollment);
                 await contosoDbContext
                     .SaveChangesAsync()

@@ -11,13 +11,10 @@ namespace Contoso.Repository;
 
 public static class OfficeAssignmentRepository
 {
-    public static async Task<int> CreateAsync(
-        OfficeAssignment officeAssignment,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<int> CreateAsync(OfficeAssignment officeAssignment) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
 
                 await contosoDbContext
                     .OfficeAssignments.AddAsync(officeAssignment)
@@ -27,13 +24,10 @@ public static class OfficeAssignmentRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Option<OfficeAssignment>> GetByInstructorIdAsync(
-        int instructorId,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Option<OfficeAssignment>> GetByInstructorIdAsync(int instructorId) =>
         await ExecuteQuery<Option<OfficeAssignment>>(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
 
                 return await contosoDbContext
                     .OfficeAssignments.SingleOrDefaultAsync(o => o.InstructorId == instructorId)

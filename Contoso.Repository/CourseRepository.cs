@@ -9,23 +9,20 @@ namespace Contoso.Repository;
 
 public static class CourseRepository
 {
-    public static async Task<int> AddAsync(
-        Course course,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<int> AddAsync(Course course) =>
         await ExecuteQuery<int>(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 await contosoDbContext.Courses.AddAsync(course).ConfigureAwait(false);
                 await contosoDbContext.SaveChangesAsync().ConfigureAwait(false);
                 return course.CourseId;
             })
             .ConfigureAwait(false);
 
-    public static async Task<Unit> DeleteAsync(int id, ContosoDbContext? contosoDbContext = null) =>
+    public static async Task<Unit> DeleteAsync(int id) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 var course =
                     await contosoDbContext.Courses.FindAsync(id).ConfigureAwait(false)
                     ?? throw new Exception($"{id} not found");
@@ -37,13 +34,10 @@ public static class CourseRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Option<Course>> GetAsync(
-        int id,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Option<Course>> GetAsync(int id) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 var result = await contosoDbContext
                     .Courses.SingleOrDefaultAsync(c => c.CourseId == id)
                     .ConfigureAwait(false);
@@ -51,13 +45,10 @@ public static class CourseRepository
             })
             .ConfigureAwait(false);
 
-    public static async Task<Unit> UpdateAsync(
-        Course course,
-        ContosoDbContext? contosoDbContext = null
-    ) =>
+    public static async Task<Unit> UpdateAsync(Course course) =>
         await ExecuteQuery(async () =>
             {
-                contosoDbContext = contosoDbContext ?? ContosoDbContextFactory.CreateDbContext();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
                 contosoDbContext.Courses.Update(course);
                 return await contosoDbContext
                     .SaveChangesAsync()
