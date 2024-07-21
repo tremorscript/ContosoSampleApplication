@@ -53,10 +53,9 @@ public static class DepartmentManager
     private static async Task<Validation<Error, Department>> DepartmentMustExist(
         int departmentId
     ) =>
-        from department in (await DepartmentRepository
-            .GetAsync(departmentId)
-            .ConfigureAwait(false))
-            .ToValidation<Error>($"Department Id {departmentId} does not exist.")
+        from department in (
+            await DepartmentRepository.GetAsync(departmentId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Department Id {departmentId} does not exist.")
         select department;
 
     private static async Task<Validation<Error, Instructor>> InstructorIdMustExist(
@@ -104,22 +103,21 @@ public static class DepartmentManager
     public static async Task<Validation<Error, int>> Create(CreateDepartment request) =>
         await (
             from department in Validate(request)
-            from result in department.Match(
-                i => DepartmentRepository.Add(i),
-                x => Task.FromResult(Fail<Error, int>(x))
-            )
+            let result = department.Map(x => DepartmentRepository.AddAsync(x).Result)
             select result
         ).ConfigureAwait(false);
 
     public static async Task<Validation<Error, Unit>> Delete(int departmentId) =>
         await (
             from department in DepartmentMustExist(departmentId)
-            from result in department.Match(
-                i => DepartmentRepository.Delete(departmentId),
-                x => Task.FromResult(Fail<Error, Unit>(x))
-            )
+            from result in department.MatchAsync(async i => await DoDeletion(departmentId), x => x)
             select result
         ).ConfigureAwait(false);
+
+    private static async Task<Validation<Error, Unit>> DoDeletion(int departmentId)
+    {
+        return await DepartmentRepository.DeleteAsync(departmentId);
+    }
 
     public static async Task<Validation<Error, Option<Department>>> GetDepartmentById(
         GetDepartmentById getDepartmentById
@@ -128,9 +126,9 @@ public static class DepartmentManager
     public static async Task<Validation<Error, Unit>> Update(UpdateDepartment request) =>
         await (
             from department in Validate(request)
-            from result in department.Match(
-                i => ApplyUpdateRequest(i, request),
-                i => Task.FromResult(Fail<Error, Unit>(i))
+            from result in department.MatchAsync(
+                async i => await ApplyUpdateRequest(i, request),
+                e => e
             )
             select result
         ).ConfigureAwait(false);

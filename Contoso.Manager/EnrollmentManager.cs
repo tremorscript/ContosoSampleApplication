@@ -1,8 +1,8 @@
 // MIT License
 
 using Contoso.Core;
+using Contoso.Repository;
 using Contoso.Repository.Models;
-using Contoso.SqlServer;
 using LanguageExt;
 using static LanguageExt.Prelude;
 
@@ -34,34 +34,37 @@ public static class EnrollmentManager
         Enrollment enrollment,
         UpdateEnrollment update
     ) =>
-        await EnrollmentRepository.Update(
-            enrollment with
-            {
-                EnrollmentId = enrollment.EnrollmentId,
-                Grade = update.Grade,
-                CourseId = enrollment.CourseId,
-                StudentId = enrollment.StudentId
-            }
-        ).ConfigureAwait(false);
+        await EnrollmentRepository
+            .UpdateAsync(
+                enrollment with
+                {
+                    EnrollmentId = enrollment.EnrollmentId,
+                    Grade = update.Grade,
+                    CourseId = enrollment.CourseId,
+                    StudentId = enrollment.StudentId
+                }
+            )
+            .ConfigureAwait(false);
 
     private static async Task<Validation<Error, int>> CourseMustExist(EnrollmentBase create) =>
-        from course in (await CourseRepository.Get(create.CourseId).ConfigureAwait(false))
-        from result in course.ToValidation<Error>($"Course {create.CourseId} does not exist.")
-        select result.CourseId;
+        from course in (
+            await CourseRepository.GetAsync(create.CourseId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Course {create.CourseId} does not exist.")
+        select course.CourseId;
 
     private static async Task<Validation<Error, Enrollment>> EnrollmentMustExist(
         int enrollmentId
     ) =>
-        from enrollment in await EnrollmentRepository.Get(enrollmentId).ConfigureAwait(false)
-        from result in enrollment.ToValidation<Error>(
-            $"Enrollment Id {enrollmentId} does not exist"
-        )
-        select result;
+        from enrollment in (
+            await EnrollmentRepository.GetAsync(enrollmentId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Enrollment Id {enrollmentId} does not exist")
+        select enrollment;
 
     private static async Task<Validation<Error, int>> StudentMustExist(EnrollmentBase create) =>
-        from student in await StudentRepository.Get(create.StudentId).ConfigureAwait(false)
-        from result in student.ToValidation<Error>($"Student {create.StudentId} does not exist.")
-        select result.StudentId;
+        from student in (
+            await StudentRepository.GetAsync(create.StudentId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Student {create.StudentId} does not exist.")
+        select student.StudentId;
 
     private static async Task<Validation<Error, Enrollment>> Validate(EnrollmentBase create) =>
         (
@@ -80,37 +83,37 @@ public static class EnrollmentManager
     public static async Task<Validation<Error, int>> Create(CreateEnrollment request) =>
         await (
             from valid in Validate(request)
-            from result in valid.Match(
-                x => EnrollmentRepository.Add(x),
-                x => Task.FromResult(Fail<Error, int>(x))
-            )
+            from result in valid.MatchAsync(async x => await CreateEnrollment(x), y => y)
             select result
         ).ConfigureAwait(false);
+
+    private static async Task<Validation<Error, int>> CreateEnrollment(Enrollment x)
+    {
+        return await EnrollmentRepository.AddAsync(x);
+    }
 
     public static async Task<Validation<Error, Unit>> Delete(int enrollmentId) =>
         await (
             from enrollment in EnrollmentMustExist(enrollmentId)
-            from result in enrollment.Match(
-                e => EnrollmentRepository.Delete(e.EnrollmentId),
-                y => Task.FromResult(Fail<Error, Unit>(y))
-            )
+            from result in enrollment.MatchAsync(async e => await DeleteEnrollment(e), y => y)
             select result
         ).ConfigureAwait(false);
 
+    private static async Task<Validation<Error, Unit>> DeleteEnrollment(Enrollment enrollment)
+    {
+        return await EnrollmentRepository.DeleteAsync(enrollment.EnrollmentId);
+    }
+
     public static async Task<Validation<Error, Enrollment>> GetEnrollmentById(int enrollmentId) =>
-        from enrollment in await EnrollmentRepository.Get(enrollmentId).ConfigureAwait(false)
-        from result in enrollment.ToValidation<Error>(
-            $"Enrollment Id {enrollmentId} does not exist"
-        )
-        select result;
+        from enrollment in (
+            await EnrollmentRepository.GetAsync(enrollmentId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Enrollment Id {enrollmentId} does not exist")
+        select enrollment;
 
     public static async Task<Validation<Error, Unit>> Update(UpdateEnrollment request) =>
         await (
             from enrollment in Validate(request)
-            from result in enrollment.Match(
-                x => ApplyUpdate(x, request),
-                x => Task.FromResult(Fail<Error, Unit>(x))
-            )
+            from result in enrollment.MatchAsync(async x => await ApplyUpdate(x, request), y => y)
             select Unit.Default
         ).ConfigureAwait(false);
 }

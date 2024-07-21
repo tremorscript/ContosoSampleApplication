@@ -28,7 +28,7 @@ public static class CourseAssignmentRepository
     ) =>
         await ExecuteQuery(async () =>
             {
-                using var contosoDbContext = ContosoDbContextFactory.CreateDbContextFunc();
+                using var contosoDbContext = ContosoDbContextFactory.CreateDbContext();
                 return await contosoDbContext
                     .CourseAssignments.Where(c => c.CourseID == courseId)
                     .Include(c => c.Course)

@@ -89,34 +89,43 @@ public static class CourseManager
     public static async Task<Validation<Error, int>> CreateCourse(CreateCourse request) =>
         await (
             from course in Validate(request.DepartmentId, request.Title, request.Credits)
-            let result = course.Match(
-                i => (CourseRepository.AddAsync(i).Result),
-                x => Fail<Error, int>(x)
+            from result in course.MatchAsync(
+                async course => await Add(course).ConfigureAwait(false),
+                e => e
             )
             select result
         ).ConfigureAwait(false);
 
-    public static Task<Validation<Error, Unit>> DeleteCourse(DeleteCourse deleteCourse) =>
-        from course in CourseMustExist(deleteCourse)
-        from result in course.Match(
-            course => DoDeletion(course.CourseId),
-            x => Task.FromResult(Fail<Error, Unit>(x))
-        )
-        select result;
+    private static async Task<Validation<Error, int>> Add(Course course)
+    {
+        return await CourseRepository.AddAsync(course).ConfigureAwait(false);
+    }
+
+    public static async Task<Validation<Error, Unit>> DeleteCourse(DeleteCourse deleteCourse) =>
+        await (
+            from course in CourseMustExist(deleteCourse)
+            from result in course.MatchAsync(
+                async course => await DoDeletion(course.CourseId).ConfigureAwait(false),
+                e => e
+            )
+            select result
+        ).ConfigureAwait(false);
 
     public static async Task<Validation<Error, Course>> GetCourseById(GetCourseById request) =>
         (
             await CourseRepository.GetAsync(request.CourseId).ConfigureAwait(false)
         ).ToValidation<Error>($"Course Id: {request.CourseId} does not exist.");
 
-    public static Task<Validation<Error, Unit>> UpdateCourse(UpdateCourse updateCourse) =>
-        from course in Validate(updateCourse.DepartmentId, updateCourse.Title, updateCourse.Credits)
-        from result in course.Match(
-            i => ApplyUpdate(i, updateCourse),
-            i => Task.FromResult(Fail<Error, Unit>(i))
-        )
-
-        select result;
+    public static async Task<Validation<Error, Unit>> UpdateCourse(UpdateCourse updateCourse) =>
+        await (
+            from course in Validate(
+                updateCourse.DepartmentId,
+                updateCourse.Title,
+                updateCourse.Credits
+            )
+            from result in course.MatchAsync(async i => await ApplyUpdate(i, updateCourse), e => e)
+            select result
+        ).ConfigureAwait(false);
 
     private static async Task<Validation<Error, Unit>> ApplyUpdate(
         Course course,

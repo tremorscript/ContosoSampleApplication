@@ -1,8 +1,8 @@
 // MIT License
 
 using Contoso.Core;
+using Contoso.Repository;
 using Contoso.Repository.Models;
-using Contoso.SqlServer;
 using LanguageExt;
 using static Contoso.Validators;
 using static LanguageExt.Prelude;
@@ -33,11 +33,11 @@ public static class StudentManager
         UpdateStudent update
     ) =>
         await StudentRepository
-            .Update(student with { FirstName = update.FirstName, LastName = update.LastName })
+            .UpdateAsync(student with { FirstName = update.FirstName, LastName = update.LastName })
             .ConfigureAwait(false);
 
     private static async Task<Validation<Error, Unit>> DoDeletion(int studentId) =>
-        await StudentRepository.Delete(studentId).ConfigureAwait(false);
+        await StudentRepository.DeleteAsync(studentId).ConfigureAwait(false);
 
     private static Validation<Error, string> NotEmpty(string str) =>
         string.IsNullOrEmpty(str)
@@ -45,21 +45,21 @@ public static class StudentManager
             : Success<Error, string>(str);
 
     private static async Task<Validation<Error, int>> PersistStudent(Student s) =>
-        await StudentRepository.Add(s).ConfigureAwait(false);
+        await StudentRepository.AddAsync(s).ConfigureAwait(false);
 
     private static async Task<Validation<Error, int>> StudentMustExist(int studentId) =>
-        from student in await StudentRepository.Get(studentId).ConfigureAwait(false)
-        from result in student.ToValidation<Error>($"Student {studentId} does not exist.")
-        select result.StudentId;
+        from student in (
+            await StudentRepository.GetAsync(studentId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Student {studentId} does not exist.")
+        select student.StudentId;
 
     private static async Task<Validation<Error, Student>> StudentMustExist(
         UpdateStudent updateStudent
     ) =>
-        from student in await StudentRepository.Get(updateStudent.StudentId).ConfigureAwait(false)
-        from result in student.ToValidation<Error>(
-            $"Student {updateStudent.StudentId} does not exist."
-        )
-        select result;
+        from student in (
+            await StudentRepository.GetAsync(updateStudent.StudentId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Student {updateStudent.StudentId} does not exist.")
+        select student;
 
     private static Validation<Error, Student> ValidateCreate(CreateStudent request) =>
         (

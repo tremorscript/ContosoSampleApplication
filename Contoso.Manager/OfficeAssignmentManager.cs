@@ -1,8 +1,8 @@
 // MIT License
 
 using Contoso.Core;
+using Contoso.Repository;
 using Contoso.Repository.Models;
-using Contoso.SqlServer;
 using LanguageExt;
 using static Contoso.Validators;
 using static LanguageExt.Prelude;
@@ -20,14 +20,13 @@ public static class OfficeAssignmentManager
     private static async Task<Validation<Error, int>> InstructorMustExist(
         CreateOfficeAssignment create
     ) =>
-        from instructor in await InstructorRepository.Get(create.InstructorId).ConfigureAwait(false)
-        from result in instructor.ToValidation<Error>(
-            $"Student {create.InstructorId} does not exist."
-        )
-        select result.InstructorId;
+        from instructor in (
+            await InstructorRepository.GetAsync(create.InstructorId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Student {create.InstructorId} does not exist.")
+        select instructor.InstructorId;
 
     private static async Task<Validation<Error, int>> Persist(OfficeAssignment officeAssignment) =>
-        await OfficeAssignmentRepository.Create(officeAssignment).ConfigureAwait(false);
+        await OfficeAssignmentRepository.CreateAsync(officeAssignment).ConfigureAwait(false);
 
     private static async Task<Validation<Error, OfficeAssignment>> Validate(
         CreateOfficeAssignment create
@@ -40,7 +39,10 @@ public static class OfficeAssignmentManager
     {
         return await (
             from assignment in Validate(request)
-            from result in assignment.Match(Persist, y => Task.FromResult(Fail<Error, int>(y)))
+            from result in assignment.MatchAsync(
+                async x => await Persist(x).ConfigureAwait(false),
+                y => y
+            )
             select result
         ).ConfigureAwait(false);
     }

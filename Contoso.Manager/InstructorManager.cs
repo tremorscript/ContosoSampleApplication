@@ -1,8 +1,8 @@
 // MIT License
 
 using Contoso.Core;
-using Contoso.Repository.Models;
 using Contoso.Repository;
+using Contoso.Repository.Models;
 using LanguageExt;
 using static Contoso.Validators;
 using static LanguageExt.Prelude;
@@ -32,23 +32,26 @@ public static class InstructorManager
         Instructor instructor,
         UpdateInstructor updateInstructor
     ) =>
-        await InstructorRepository.Update(
-            instructor with
-            {
-                FirstName = updateInstructor.FirstName,
-                LastName = updateInstructor.LastName,
-            }
-        ).ConfigureAwait(false);
+        await InstructorRepository
+            .UpdateAsync(
+                instructor with
+                {
+                    FirstName = updateInstructor.FirstName,
+                    LastName = updateInstructor.LastName,
+                }
+            )
+            .ConfigureAwait(false);
 
     private static async Task<Validation<Error, Instructor>> InstructorMustExist(
         int instructorId
     ) =>
-        (await InstructorRepository.Get(instructorId).ConfigureAwait(false)).Bind(x =>
-            x.ToValidation<Error>($"Instructor with id {instructorId} does not exist")
-        );
+        from result in (
+            await InstructorRepository.GetAsync(instructorId).ConfigureAwait(false)
+        ).ToValidation<Error>($"Instructor with id {instructorId} does not exist")
+        select result;
 
     private static async Task<Validation<Error, int>> PersistInstructor(Instructor instructor) =>
-        await InstructorRepository.Add(instructor).ConfigureAwait(false);
+        await InstructorRepository.AddAsync(instructor).ConfigureAwait(false);
 
     private static Validation<Error, Instructor> Validate(CreateInstructor command) =>
         (ValidateFirstName(command), ValidateLastName(command), ValidateHireDate(command)).Apply(
@@ -84,26 +87,26 @@ public static class InstructorManager
     public static async Task<Validation<Error, int>> Create(CreateInstructor request) =>
         await (
             from instructor in Task.FromResult(Validate(request))
-            from result in instructor.Match(
-                PersistInstructor,
-                x => Task.FromResult(Fail<Error, int>(x))
-            )
+            from result in instructor.MatchAsync(async x => await PersistInstructor(x), y => y)
             select result
         ).ConfigureAwait(false);
 
     public static async Task<Validation<Error, Unit>> Delete(int instructorId) =>
         await (
             from instructor in InstructorMustExist(instructorId)
-            from result in instructor.Match(
-                i => InstructorRepository.Delete(i.InstructorId),
-                x => Task.FromResult(Fail<Error, Unit>(x))
+            from result in instructor.MatchAsync(
+                async x =>
+                    Validation<Error, Unit>.Success(
+                        await InstructorRepository.DeleteAsync(x.InstructorId)
+                    ),
+                y => y
             )
             select result
         ).ConfigureAwait(false);
 
     public static async Task<Validation<Error, Option<Instructor>>> GetInstructorById(
         int instructorId
-    ) => await InstructorRepository.Get(instructorId).ConfigureAwait(false);
+    ) => await InstructorRepository.GetAsync(instructorId).ConfigureAwait(false);
 
     public static async Task<Validation<Error, Unit>> Update(UpdateInstructor request) =>
         await (
